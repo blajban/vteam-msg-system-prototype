@@ -40,7 +40,9 @@ const eventTypes = {
         invoicePaid: "invoicePaid"
     },
     testEvents: {
-        testEvent: "testEvent"
+        testEvent: "testEvent",
+        getData1: "getData1",
+        getData2: "getData2"
     }
 };
 

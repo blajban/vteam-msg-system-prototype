@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const amqp = require('amqplib/callback_api');
-const { exchanges, eventTypes } = require('./resources');
+const { eventTypes } = require('./resources');
 
 const host = 'amqp://localhost';
 
