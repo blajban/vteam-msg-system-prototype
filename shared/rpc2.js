@@ -10,6 +10,46 @@ function generateId() {
          Math.random().toString();
 }
 
+const
+
+const reqprom = (eventType, event) => {
+  amqp.connect(host, function(error0, connection) {
+    if (error0) {
+      throw error0;
+    }
+    connection.createChannel(function(error1, channel) {
+      if (error1) {
+        throw error1;
+      }
+  
+      channel.assertQueue('', {
+        exclusive: true
+      }, function(error2, q) {
+        if (error2) {
+          throw error2;
+        }
+        const correlationId = generateId();
+        
+  
+        channel.consume(q.queue, function(msg) {
+          if (msg.properties.correlationId == correlationId) {
+            return Promise.resolve("Success");
+          }
+        }, {
+          noAck: true
+        });
+  
+        channel.sendToQueue(eventType,
+          Buffer.from(JSON.stringify(event)),{
+            correlationId: correlationId,
+            replyTo: q.queue });
+      });
+    });
+  });
+
+
+}
+
 const request = (eventType, event, cb) => {
   amqp.connect(host, function(error0, connection) {
   if (error0) {
@@ -34,7 +74,6 @@ const request = (eventType, event, cb) => {
           cb(JSON.parse(msg.content));
           setTimeout(function() {
             connection.close();
-            process.exit(0)
           }, 500);
         }
       }, {
@@ -81,5 +120,5 @@ const response = (eventType, cb) => {
 }
 
 
-module.exports = { request, response }
+module.exports = { request, response, reqprom }
 
